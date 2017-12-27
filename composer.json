@@ -1,0 +1,48 @@
+{
+  "name": "howtoadhd/wp-platform-installer",
+  "description": "Composer plugin to install the HowToADHD WP Platform",
+  "homepage": "https://github.com/howtoadhd/wp-platform-installer",
+  "type": "composer-plugin",
+  "license": "GPL-2.0+",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "authors": [
+    {
+      "name": "Lorelei Aurora",
+      "email": "iam@l5i.me"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/howtoadhd/wp-platform-installer/issues",
+    "source": "https://github.com/howtoadhd/wp-platform-installer"
+  },
+  "autoload": {
+    "psr-4": {
+      "HowToADHD\\Composer\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\HowToADHD\\Composer\\": "tests/"
+    }
+  },
+  "extra": {
+    "class": "HowToADHD\\Composer\\WPPlatformPlugin"
+  },
+  "require": {
+    "composer-plugin-api": "^1.0"
+  },
+  "require-dev": {
+    "composer/composer": "^1.0",
+    "phpunit/phpunit": ">=4.8.35"
+  },
+  "conflict": {
+    "composer/installers": "<1.0.6"
+  },
+  "scripts": {
+    "test:phpunit": "phpunit",
+    "test": [
+      "@test:phpunit"
+    ]
+  }
+}
