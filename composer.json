@@ -37,7 +37,7 @@
     "phpunit/phpunit": ">=4.8.35"
   },
   "conflict": {
-    "composer/installers": "<1.0.6"
+    "johnpbloch/wordpress-core-installer": "*"
   },
   "scripts": {
     "test:phpunit": "phpunit",

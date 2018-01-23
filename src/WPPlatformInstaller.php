@@ -101,6 +101,8 @@ class WPPlatformInstaller extends LibraryInstaller {
 	 * @param PackageInterface $package
 	 */
 	public function linkDropins( PackageInterface $package ) {
+		$this->filesystem->ensureDirectoryExists( $this->getContentPath() );
+
 		$content_dir = realpath( $this->getContentPath() );
 		$dropins_dir = realpath( $this->getInstallPath( $package ) . '/dropins/' );
 
