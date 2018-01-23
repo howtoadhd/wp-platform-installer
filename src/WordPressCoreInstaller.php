@@ -39,7 +39,7 @@ class WordPressCoreInstaller extends LibraryInstaller
             $installationDir = $extra['wordpress-dir'];
         }
         if (! $installationDir) {
-            $installationDir = 'WordPress';
+            $installationDir = 'wordpress';
         }
         $vendorDir = $this->composer->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) ?: 'vendor';
         if (in_array($installationDir, $this->sensitiveDirectories) ||
