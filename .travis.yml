@@ -1,0 +1,23 @@
+sudo: required
+
+language: php
+php:
+  - '7.0'
+
+stages:
+  - test
+
+jobs:
+  include:
+
+    - stage: test
+      env:
+        - TEST=phpunit
+      before_script:
+        - composer install
+      script:
+        - composer test:phpunit
+
+notifications:
+  webhooks:
+    - https://h2a-hubot.herokuapp.com/webhooks/travis
