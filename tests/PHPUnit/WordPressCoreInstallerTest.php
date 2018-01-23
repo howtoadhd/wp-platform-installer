@@ -47,7 +47,7 @@ class WordPressCoreInstallerTest extends TestCase
         $installDir = 'tmp-wp-' . rand(0, 9);
         $rootPackage->setExtra(
             [
-                'wordpress-dir' => $installDir,
+                'wordpress-core-dir' => $installDir,
             ]
         );
         $installer = new WordPressCoreInstaller(new NullIO(), $composer);
@@ -67,7 +67,7 @@ class WordPressCoreInstallerTest extends TestCase
         $composer->setPackage($rootPackage);
         $rootPackage->setExtra(
             [
-                'wordpress-dir' => [
+                'wordpress-core-dir' => [
                     'test/package-one' => 'install-dir/one',
                     'test/package-two' => 'install-dir/two',
                 ],
@@ -96,7 +96,7 @@ class WordPressCoreInstallerTest extends TestCase
         $package   = new Package('test/has-default-install-dir', '0.1.0.0', '0.1');
         $package->setExtra(
             [
-                'wordpress-dir' => 'not-wordpress',
+                'wordpress-core-dir' => 'not-wordpress',
             ]
         );
 
@@ -109,14 +109,14 @@ class WordPressCoreInstallerTest extends TestCase
         $composer->setPackage(new RootPackage('test/root-package', '0.1.0.0', '0.1'));
         $composer->getPackage()->setExtra(
             [
-                'wordpress-dir' => 'wp',
+                'wordpress-core-dir' => 'wp',
             ]
         );
         $installer = new WordPressCoreInstaller(new NullIO(), $composer);
         $package   = new Package('test/has-default-install-dir', '0.1.0.0', '0.1');
         $package->setExtra(
             [
-                'wordpress-dir' => 'not-wordpress',
+                'wordpress-core-dir' => 'not-wordpress',
             ]
         );
 
@@ -141,14 +141,14 @@ class WordPressCoreInstallerTest extends TestCase
     /**
      * @dataProvider                   dataProviderSensitiveDirectories
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp /Warning! .+? is an invalid WordPress install directory \(from test\/package\)!/
+     * @expectedExceptionMessageRegExp /Warning! .+? is an invalid install directory \(from test\/package\)!/
      */
     public function testSensitiveInstallDirectoriesNotAllowed($directory)
     {
         $composer  = $this->createComposer();
         $installer = new WordPressCoreInstaller(new NullIO(), $composer);
         $package   = new Package('test/package', '1.1.0.0', '1.1');
-        $package->setExtra([ 'wordpress-dir' => $directory ]);
+        $package->setExtra([ 'wordpress-core-dir' => $directory ]);
         $installer->getInstallPath($package);
     }
 

@@ -3,62 +3,27 @@
 namespace HowToADHD\Composer;
 
 use Composer\Config;
-use Composer\Installer\LibraryInstaller;
 use Composer\Package\PackageInterface;
 use Composer\Repository\InstalledRepositoryInterface;
 
-class WPPlatformInstaller extends LibraryInstaller
+class WPPlatformInstaller extends BaseInstaller
 {
 
     const TYPE = 'wp-platform';
 
-    const MESSAGE_CONFLICT  = 'Two packages (%s and %s) cannot share the same directory!';
-    const MESSAGE_SENSITIVE = 'Warning! %s is an invalid WPPlatform install directory (from %s)!';
-
-    private static $installedPaths = [];
-
-    private $sensitiveDirectories = [ '.' ];
-
     /**
      * {@inheritDoc}
      */
-    public function getInstallPath(PackageInterface $package)
+    protected function getDefaultInstallDir()
     {
-        $installationDir = false;
-        $prettyName      = $package->getPrettyName();
-        if ($this->composer->getPackage()) {
-            $topExtra = $this->composer->getPackage()->getExtra();
-            if (! empty($topExtra['wp-platform-dir'])) {
-                $installationDir = $topExtra['wp-platform-dir'];
-                if (is_array($installationDir)) {
-                    $installationDir = empty($installationDir[ $prettyName ]) ? false : $installationDir[ $prettyName ];
-                }
-            }
-        }
-        $extra = $package->getExtra();
-        if (! $installationDir && ! empty($extra['wp-platform-dir'])) {
-            $installationDir = $extra['wp-platform-dir'];
-        }
-        if (! $installationDir) {
-            $installationDir = $this->getContentPath() . '/platform';
-        }
-        $vendorDir = $this->composer->getConfig()->get('vendor-dir', Config::RELATIVE_PATHS) ?: 'vendor';
-        if (in_array($installationDir, $this->sensitiveDirectories) ||
-            ( $installationDir === $vendorDir )
-        ) {
-            throw new \InvalidArgumentException($this->getSensitiveDirectoryMessage($installationDir, $prettyName));
-        }
-        if (! empty(self::$installedPaths[ $installationDir ]) &&
-            $prettyName !== self::$installedPaths[ $installationDir ]
-        ) {
-            $conflict_message = $this->getConflictMessage($prettyName, self::$installedPaths[ $installationDir ]);
-            throw new \InvalidArgumentException($conflict_message);
-        }
-        self::$installedPaths[ $installationDir ] = $prettyName;
-
-        return rtrim($installationDir, '/\\');
+        return $this->getContentPath() . '/platform';
     }
 
+    /**
+     * Calculate path to wp-content
+     *
+     * @return string
+     */
     public function getContentPath()
     {
         if ($this->composer->getPackage()) {
@@ -154,39 +119,5 @@ class WPPlatformInstaller extends LibraryInstaller
                 unlink($src);
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($packageType)
-    {
-        return self::TYPE === $packageType;
-    }
-
-    /**
-     * Get the exception message with conflicting packages
-     *
-     * @param string $attempted
-     * @param string $alreadyExists
-     *
-     * @return string
-     */
-    private function getConflictMessage($attempted, $alreadyExists)
-    {
-        return sprintf(self::MESSAGE_CONFLICT, $attempted, $alreadyExists);
-    }
-
-    /**
-     * Get the exception message for attempted sensitive directories
-     *
-     * @param string $attempted
-     * @param string $packageName
-     *
-     * @return string
-     */
-    private function getSensitiveDirectoryMessage($attempted, $packageName)
-    {
-        return sprintf(self::MESSAGE_SENSITIVE, $attempted, $packageName);
     }
 }

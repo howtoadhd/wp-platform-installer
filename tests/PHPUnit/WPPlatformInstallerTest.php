@@ -141,7 +141,7 @@ class WPPlatformInstallerTest extends TestCase
     /**
      * @dataProvider                   dataProviderSensitiveDirectories
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp /Warning! .+? is an invalid WPPlatform install directory \(from test\/package\)!/
+     * @expectedExceptionMessageRegExp /Warning! .+? is an invalid install directory \(from test\/package\)!/
      */
     public function testSensitiveInstallDirectoriesNotAllowed($directory)
     {
