@@ -25,16 +25,16 @@ class WordPressCoreInstaller extends LibraryInstaller {
 		$prettyName      = $package->getPrettyName();
 		if ( $this->composer->getPackage() ) {
 			$topExtra = $this->composer->getPackage()->getExtra();
-			if ( ! empty( $topExtra['wordpress-install-dir'] ) ) {
-				$installationDir = $topExtra['wordpress-install-dir'];
+			if ( ! empty( $topExtra['wordpress-dir'] ) ) {
+				$installationDir = $topExtra['wordpress-dir'];
 				if ( is_array( $installationDir ) ) {
 					$installationDir = empty( $installationDir[ $prettyName ] ) ? false : $installationDir[ $prettyName ];
 				}
 			}
 		}
 		$extra = $package->getExtra();
-		if ( ! $installationDir && ! empty( $extra['wordpress-install-dir'] ) ) {
-			$installationDir = $extra['wordpress-install-dir'];
+		if ( ! $installationDir && ! empty( $extra['wordpress-dir'] ) ) {
+			$installationDir = $extra['wordpress-dir'];
 		}
 		if ( ! $installationDir ) {
 			$installationDir = 'wordpress';
