@@ -40,7 +40,7 @@ class WordPressCoreInstallerTest extends TestCase {
 		$composer->setPackage( $rootPackage );
 		$installDir = 'tmp-wp-' . rand( 0, 9 );
 		$rootPackage->setExtra( array(
-			'wordpress-install-dir' => $installDir,
+			'wordpress-dir' => $installDir,
 		) );
 		$installer = new WordPressCoreInstaller( new NullIO(), $composer );
 
@@ -57,7 +57,7 @@ class WordPressCoreInstallerTest extends TestCase {
 		$rootPackage = new RootPackage( 'test/root-package', '1.0.1.0', '1.0.1' );
 		$composer->setPackage( $rootPackage );
 		$rootPackage->setExtra( array(
-			'wordpress-install-dir' => array(
+			'wordpress-dir' => array(
 				'test/package-one' => 'install-dir/one',
 				'test/package-two' => 'install-dir/two',
 			),
@@ -83,7 +83,7 @@ class WordPressCoreInstallerTest extends TestCase {
 		$installer = new WordPressCoreInstaller( new NullIO(), $this->createComposer() );
 		$package   = new Package( 'test/has-default-install-dir', '0.1.0.0', '0.1' );
 		$package->setExtra( array(
-			'wordpress-install-dir' => 'not-wordpress',
+			'wordpress-dir' => 'not-wordpress',
 		) );
 
 		$this->assertEquals( 'not-wordpress', $installer->getInstallPath( $package ) );
@@ -93,12 +93,12 @@ class WordPressCoreInstallerTest extends TestCase {
 		$composer = $this->createComposer();
 		$composer->setPackage( new RootPackage( 'test/root-package', '0.1.0.0', '0.1' ) );
 		$composer->getPackage()->setExtra( array(
-			'wordpress-install-dir' => 'wp',
+			'wordpress-dir' => 'wp',
 		) );
 		$installer = new WordPressCoreInstaller( new NullIO(), $composer );
 		$package   = new Package( 'test/has-default-install-dir', '0.1.0.0', '0.1' );
 		$package->setExtra( array(
-			'wordpress-install-dir' => 'not-wordpress',
+			'wordpress-dir' => 'not-wordpress',
 		) );
 
 		$this->assertEquals( 'wp', $installer->getInstallPath( $package ) );
@@ -127,7 +127,7 @@ class WordPressCoreInstallerTest extends TestCase {
 		$composer  = $this->createComposer();
 		$installer = new WordPressCoreInstaller( new NullIO(), $composer );
 		$package   = new Package( 'test/package', '1.1.0.0', '1.1' );
-		$package->setExtra( array( 'wordpress-install-dir' => $directory ) );
+		$package->setExtra( array( 'wordpress-dir' => $directory ) );
 		$installer->getInstallPath( $package );
 	}
 

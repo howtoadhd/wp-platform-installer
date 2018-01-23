@@ -38,9 +38,9 @@ class WPPlatformInstallerTest extends TestCase {
 		$composer    = $this->createComposer();
 		$rootPackage = new RootPackage( 'test/root-package', '1.0.1.0', '1.0.1' );
 		$composer->setPackage( $rootPackage );
-		$installDir = 'tmp-wp-' . rand( 0, 9 );
+		$installDir = 'tmp-platform-' . rand( 0, 9 );
 		$rootPackage->setExtra( array(
-			'wp-platform-install-dir' => $installDir,
+			'wp-platform-dir' => $installDir,
 		) );
 		$installer = new WPPlatformInstaller( new NullIO(), $composer );
 
@@ -57,7 +57,7 @@ class WPPlatformInstallerTest extends TestCase {
 		$rootPackage = new RootPackage( 'test/root-package', '1.0.1.0', '1.0.1' );
 		$composer->setPackage( $rootPackage );
 		$rootPackage->setExtra( array(
-			'wp-platform-install-dir' => array(
+			'wp-platform-dir' => array(
 				'test/package-one' => 'install-dir/one',
 				'test/package-two' => 'install-dir/two',
 			),
@@ -83,25 +83,25 @@ class WPPlatformInstallerTest extends TestCase {
 		$installer = new WPPlatformInstaller( new NullIO(), $this->createComposer() );
 		$package   = new Package( 'test/has-default-install-dir', '0.1.0.0', '0.1' );
 		$package->setExtra( array(
-			'wp-platform-install-dir' => 'not-wordpress',
+			'wp-platform-dir' => 'not-platform',
 		) );
 
-		$this->assertEquals( 'not-wordpress', $installer->getInstallPath( $package ) );
+		$this->assertEquals( 'not-platform', $installer->getInstallPath( $package ) );
 	}
 
 	public function testCorePackageDefaultDoesNotOverrideRootDirectoryDefinition() {
 		$composer = $this->createComposer();
 		$composer->setPackage( new RootPackage( 'test/root-package', '0.1.0.0', '0.1' ) );
 		$composer->getPackage()->setExtra( array(
-			'wp-platform-install-dir' => 'wp',
+			'wp-platform-dir' => 'platform',
 		) );
 		$installer = new WPPlatformInstaller( new NullIO(), $composer );
 		$package   = new Package( 'test/has-default-install-dir', '0.1.0.0', '0.1' );
 		$package->setExtra( array(
-			'wp-platform-install-dir' => 'not-wordpress',
+			'wp-platform-dir' => 'not-platform',
 		) );
 
-		$this->assertEquals( 'wp', $installer->getInstallPath( $package ) );
+		$this->assertEquals( 'platform', $installer->getInstallPath( $package ) );
 	}
 
 	/**
@@ -127,7 +127,7 @@ class WPPlatformInstallerTest extends TestCase {
 		$composer  = $this->createComposer();
 		$installer = new WPPlatformInstaller( new NullIO(), $composer );
 		$package   = new Package( 'test/package', '1.1.0.0', '1.1' );
-		$package->setExtra( array( 'wp-platform-install-dir' => $directory ) );
+		$package->setExtra( array( 'wp-platform-dir' => $directory ) );
 		$installer->getInstallPath( $package );
 	}
 
