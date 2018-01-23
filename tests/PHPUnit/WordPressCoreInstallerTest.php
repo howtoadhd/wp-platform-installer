@@ -90,39 +90,6 @@ class WordPressCoreInstallerTest extends TestCase
         );
     }
 
-    public function testCorePackageCanDefineInstallDirectory()
-    {
-        $installer = new WordPressCoreInstaller(new NullIO(), $this->createComposer());
-        $package   = new Package('test/has-default-install-dir', '0.1.0.0', '0.1');
-        $package->setExtra(
-            [
-                'wordpress-core-dir' => 'not-wordpress',
-            ]
-        );
-
-        $this->assertEquals('not-wordpress', $installer->getInstallPath($package));
-    }
-
-    public function testCorePackageDefaultDoesNotOverrideRootDirectoryDefinition()
-    {
-        $composer = $this->createComposer();
-        $composer->setPackage(new RootPackage('test/root-package', '0.1.0.0', '0.1'));
-        $composer->getPackage()->setExtra(
-            [
-                'wordpress-core-dir' => 'wp',
-            ]
-        );
-        $installer = new WordPressCoreInstaller(new NullIO(), $composer);
-        $package   = new Package('test/has-default-install-dir', '0.1.0.0', '0.1');
-        $package->setExtra(
-            [
-                'wordpress-core-dir' => 'not-wordpress',
-            ]
-        );
-
-        $this->assertEquals('wp', $installer->getInstallPath($package));
-    }
-
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Two packages (test/bazbat and test/foobar) cannot share the same directory!
@@ -146,9 +113,11 @@ class WordPressCoreInstallerTest extends TestCase
     public function testSensitiveInstallDirectoriesNotAllowed($directory)
     {
         $composer  = $this->createComposer();
+        $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
+        $composer->setPackage($rootPackage);
+        $rootPackage->setExtra([ 'wordpress-core-dir' => $directory ]);
         $installer = new WordPressCoreInstaller(new NullIO(), $composer);
         $package   = new Package('test/package', '1.1.0.0', '1.1');
-        $package->setExtra([ 'wordpress-core-dir' => $directory ]);
         $installer->getInstallPath($package);
     }
 

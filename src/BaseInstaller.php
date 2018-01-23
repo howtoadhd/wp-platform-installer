@@ -52,10 +52,6 @@ abstract class BaseInstaller extends LibraryInstaller
                 }
             }
         }
-        $extra = $package->getExtra();
-        if (! $installationDir && ! empty($extra[$this->extraKey])) {
-            $installationDir = $extra[$this->extraKey];
-        }
         if (! $installationDir) {
             $installationDir = $this->getDefaultInstallDir();
         }
