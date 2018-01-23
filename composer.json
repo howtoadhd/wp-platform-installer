@@ -1,6 +1,6 @@
 {
   "name": "howtoadhd/wp-platform-installer",
-  "description": "Composer plugin to install the HowToADHD WP Platform",
+  "description": "Composer plugin to install the HowToADHD WPPlatform",
   "homepage": "https://github.com/howtoadhd/wp-platform-installer",
   "type": "composer-plugin",
   "license": "GPL-2.0+",
@@ -29,21 +29,35 @@
   "extra": {
     "class": "HowToADHD\\Composer\\WPPlatformPlugin"
   },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://howtoadhd.github.io/satis"
+    }
+  ],
   "require": {
     "composer-plugin-api": "^1.0"
   },
   "require-dev": {
     "composer/composer": "^1.0",
     "phpunit/phpunit": ">=4.8.35",
-    "overtrue/phplint": "^1.0"
+    "overtrue/phplint": "^1.0",
+    "squizlabs/php_codesniffer": "^3.2",
+    "wimg/php-compatibility": "^8.1"
   },
   "conflict": {
     "johnpbloch/wordpress-core-installer": "*"
   },
   "scripts": {
+    "analyse:phpcs": "phpcs .",
     "analyse:phplint": "phplint",
     "analyse": [
-      "@analyse:phplint"
+      "@analyse:phplint",
+      "@analyse:phpcs"
+    ],
+    "fix:phpcbf": "phpcbf .",
+    "fix": [
+      "@fix:phpcbf"
     ],
     "test:phpunit": "phpunit",
     "test": [

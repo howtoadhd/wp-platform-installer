@@ -19,6 +19,14 @@ jobs:
       script:
         - composer analyse:phplint
 
+    - stage: analyse
+      env:
+        - TEST=phpcs
+      before_script:
+        - composer install
+      script:
+        - composer analyse:phpcs
+
     - stage: test
       env:
         - TEST=phpunit
