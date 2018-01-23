@@ -5,10 +5,19 @@ php:
   - '7.0'
 
 stages:
+  - analyse
   - test
 
 jobs:
   include:
+
+    - stage: analyse
+      env:
+        - TEST=phplint
+      before_script:
+        - composer install
+      script:
+        - composer analyse:phplint
 
     - stage: test
       env:

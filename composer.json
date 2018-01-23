@@ -34,12 +34,17 @@
   },
   "require-dev": {
     "composer/composer": "^1.0",
-    "phpunit/phpunit": ">=4.8.35"
+    "phpunit/phpunit": ">=4.8.35",
+    "overtrue/phplint": "^1.0"
   },
   "conflict": {
     "johnpbloch/wordpress-core-installer": "*"
   },
   "scripts": {
+    "analyse:phplint": "phplint",
+    "analyse": [
+      "@analyse:phplint"
+    ],
     "test:phpunit": "phpunit",
     "test": [
       "@test:phpunit"
