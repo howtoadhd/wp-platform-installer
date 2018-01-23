@@ -26,16 +26,16 @@ class WPPlatformInstaller extends LibraryInstaller {
 		$prettyName      = $package->getPrettyName();
 		if ( $this->composer->getPackage() ) {
 			$topExtra = $this->composer->getPackage()->getExtra();
-			if ( ! empty( $topExtra['wp-platform-install-dir'] ) ) {
-				$installationDir = $topExtra['wp-platform-install-dir'];
+			if ( ! empty( $topExtra['wp-platform-dir'] ) ) {
+				$installationDir = $topExtra['wp-platform-dir'];
 				if ( is_array( $installationDir ) ) {
 					$installationDir = empty( $installationDir[ $prettyName ] ) ? false : $installationDir[ $prettyName ];
 				}
 			}
 		}
 		$extra = $package->getExtra();
-		if ( ! $installationDir && ! empty( $extra['wp-platform-install-dir'] ) ) {
-			$installationDir = $extra['wp-platform-install-dir'];
+		if ( ! $installationDir && ! empty( $extra['wp-platform-dir'] ) ) {
+			$installationDir = $extra['wp-platform-dir'];
 		}
 		if ( ! $installationDir ) {
 			$installationDir = $this->getContentPath() . '/platform';
