@@ -31,12 +31,30 @@ class WPPlatformInstallerTest extends TestCase
         $this->assertFalse($installer->supports('not-wp-platform'));
     }
 
-    public function testDefaultInstallDir()
+    public function testDefaultInstallDirs()
     {
         $installer = new WPPlatformInstaller(new NullIO(), $this->createComposer());
         $package   = new Package('howtoadhd/test-package', '1.0.0.0', '1.0.0');
 
         $this->assertEquals('wp-content/platform', $installer->getInstallPath($package));
+        $this->assertEquals('wp-content', $installer->getContentPath());
+    }
+
+    public function testCustomContentDir()
+    {
+        $composer    = $this->createComposer();
+        $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
+        $composer->setPackage($rootPackage);
+        $rootPackage->setExtra(
+            [
+                'wp-content-dir' => 'not-content',
+            ]
+        );
+        $installer = new WPPlatformInstaller(new NullIO(), $composer);
+        $package   = new Package('howtoadhd/test-package', '1.0.0.0', '1.0.0');
+
+        $this->assertEquals('not-content/platform', $installer->getInstallPath($package));
+        $this->assertEquals('not-content', $installer->getContentPath());
     }
 
     public function testSingleRootInstallDir()
@@ -112,10 +130,10 @@ class WPPlatformInstallerTest extends TestCase
      */
     public function testSensitiveInstallDirectoriesNotAllowed($directory)
     {
-        $composer  = $this->createComposer();
+        $composer    = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
         $composer->setPackage($rootPackage);
-        $rootPackage->setExtra([ 'wp-platform-dir' => $directory ]);
+        $rootPackage->setExtra(['wp-platform-dir' => $directory]);
         $installer = new WPPlatformInstaller(new NullIO(), $composer);
         $package   = new Package('test/package', '1.1.0.0', '1.1');
         $installer->getInstallPath($package);
@@ -124,8 +142,8 @@ class WPPlatformInstallerTest extends TestCase
     public function dataProviderSensitiveDirectories()
     {
         return [
-            [ '.' ],
-            [ 'vendor' ],
+            ['.'],
+            ['vendor'],
         ];
     }
 
