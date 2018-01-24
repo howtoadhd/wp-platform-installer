@@ -2,30 +2,16 @@
 
 namespace Tests\HowToADHD\Composer\PHPUnit;
 
-use Composer\Composer;
-use Composer\Config;
-use Composer\IO\NullIO;
 use Composer\Package\Package;
 use Composer\Package\RootPackage;
 use HowToADHD\Composer\WPPlatformInstaller;
-use PHPUnit\Framework\TestCase;
 
 class WPPlatformInstallerTest extends TestCase
 {
 
-    protected function setUp()
-    {
-        $this->resetInstallPaths();
-    }
-
-    protected function tearDown()
-    {
-        $this->resetInstallPaths();
-    }
-
     public function testSupports()
     {
-        $installer = new WPPlatformInstaller(new NullIO(), $this->createComposer());
+        $installer = new WPPlatformInstaller($this->io, $this->composer);
 
         $this->assertTrue($installer->supports('wp-platform'));
         $this->assertFalse($installer->supports('not-wp-platform'));
@@ -33,7 +19,7 @@ class WPPlatformInstallerTest extends TestCase
 
     public function testDefaultInstallDirs()
     {
-        $installer = new WPPlatformInstaller(new NullIO(), $this->createComposer());
+        $installer = new WPPlatformInstaller($this->io, $this->composer);
         $package   = new Package('howtoadhd/test-package', '1.0.0.0', '1.0.0');
 
         $this->assertEquals('wp-content/platform', $installer->getInstallPath($package));
@@ -42,15 +28,14 @@ class WPPlatformInstallerTest extends TestCase
 
     public function testCustomContentDir()
     {
-        $composer    = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
-        $composer->setPackage($rootPackage);
+        $this->composer->setPackage($rootPackage);
         $rootPackage->setExtra(
             [
                 'wp-content-dir' => 'not-content',
             ]
         );
-        $installer = new WPPlatformInstaller(new NullIO(), $composer);
+        $installer = new WPPlatformInstaller($this->io, $this->composer);
         $package   = new Package('howtoadhd/test-package', '1.0.0.0', '1.0.0');
 
         $this->assertEquals('not-content/platform', $installer->getInstallPath($package));
@@ -59,16 +44,15 @@ class WPPlatformInstallerTest extends TestCase
 
     public function testSingleRootInstallDir()
     {
-        $composer    = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
-        $composer->setPackage($rootPackage);
+        $this->composer->setPackage($rootPackage);
         $installDir = 'tmp-platform-' . rand(0, 9);
         $rootPackage->setExtra(
             [
                 'wp-platform-dir' => $installDir,
             ]
         );
-        $installer = new WPPlatformInstaller(new NullIO(), $composer);
+        $installer = new WPPlatformInstaller($this->io, $this->composer);
 
         $this->assertEquals(
             $installDir,
@@ -80,9 +64,8 @@ class WPPlatformInstallerTest extends TestCase
 
     public function testArrayOfInstallDirs()
     {
-        $composer    = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
-        $composer->setPackage($rootPackage);
+        $this->composer->setPackage($rootPackage);
         $rootPackage->setExtra(
             [
                 'wp-platform-dir' => [
@@ -91,7 +74,7 @@ class WPPlatformInstallerTest extends TestCase
                 ],
             ]
         );
-        $installer = new WPPlatformInstaller(new NullIO(), $composer);
+        $installer = new WPPlatformInstaller($this->io, $this->composer);
 
         $this->assertEquals(
             'install-dir/one',
@@ -114,8 +97,7 @@ class WPPlatformInstallerTest extends TestCase
      */
     public function testTwoPackagesCannotShareDirectory()
     {
-        $composer  = $this->createComposer();
-        $installer = new WPPlatformInstaller(new NullIO(), $composer);
+        $installer = new WPPlatformInstaller($this->io, $this->composer);
         $package1  = new Package('test/foobar', '1.1.1.1', '1.1.1.1');
         $package2  = new Package('test/bazbat', '1.1.1.1', '1.1.1.1');
 
@@ -130,11 +112,10 @@ class WPPlatformInstallerTest extends TestCase
      */
     public function testSensitiveInstallDirectoriesNotAllowed($directory)
     {
-        $composer    = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
-        $composer->setPackage($rootPackage);
+        $this->composer->setPackage($rootPackage);
         $rootPackage->setExtra(['wp-platform-dir' => $directory]);
-        $installer = new WPPlatformInstaller(new NullIO(), $composer);
+        $installer = new WPPlatformInstaller($this->io, $this->composer);
         $package   = new Package('test/package', '1.1.0.0', '1.1');
         $installer->getInstallPath($package);
     }
@@ -145,23 +126,5 @@ class WPPlatformInstallerTest extends TestCase
             ['.'],
             ['vendor'],
         ];
-    }
-
-    private function resetInstallPaths()
-    {
-        $prop = new \ReflectionProperty('\HowToADHD\Composer\WPPlatformInstaller', 'installedPaths');
-        $prop->setAccessible(true);
-        $prop->setValue([]);
-    }
-
-    /**
-     * @return Composer
-     */
-    private function createComposer()
-    {
-        $composer = new Composer();
-        $composer->setConfig(new Config());
-
-        return $composer;
     }
 }

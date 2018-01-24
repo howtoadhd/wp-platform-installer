@@ -2,30 +2,16 @@
 
 namespace Tests\HowToADHD\Composer\PHPUnit;
 
-use Composer\Composer;
-use Composer\Config;
-use Composer\IO\NullIO;
 use Composer\Package\Package;
 use Composer\Package\RootPackage;
 use HowToADHD\Composer\WordPressCoreInstaller;
-use PHPUnit\Framework\TestCase;
 
 class WordPressCoreInstallerTest extends TestCase
 {
 
-    protected function setUp()
-    {
-        $this->resetInstallPaths();
-    }
-
-    protected function tearDown()
-    {
-        $this->resetInstallPaths();
-    }
-
     public function testSupports()
     {
-        $installer = new WordPressCoreInstaller(new NullIO(), $this->createComposer());
+        $installer = new WordPressCoreInstaller($this->io, $this->composer);
 
         $this->assertTrue($installer->supports('wordpress-core'));
         $this->assertFalse($installer->supports('not-wordpress-core'));
@@ -33,7 +19,7 @@ class WordPressCoreInstallerTest extends TestCase
 
     public function testDefaultInstallDir()
     {
-        $installer = new WordPressCoreInstaller(new NullIO(), $this->createComposer());
+        $installer = new WordPressCoreInstaller($this->io, $this->composer);
         $package   = new Package('howtoadhd/test-package', '1.0.0.0', '1.0.0');
 
         $this->assertEquals('wordpress', $installer->getInstallPath($package));
@@ -41,16 +27,15 @@ class WordPressCoreInstallerTest extends TestCase
 
     public function testSingleRootInstallDir()
     {
-        $composer    = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
-        $composer->setPackage($rootPackage);
+        $this->composer->setPackage($rootPackage);
         $installDir = 'tmp-wp-' . rand(0, 9);
         $rootPackage->setExtra(
             [
                 'wordpress-core-dir' => $installDir,
             ]
         );
-        $installer = new WordPressCoreInstaller(new NullIO(), $composer);
+        $installer = new WordPressCoreInstaller($this->io, $this->composer);
 
         $this->assertEquals(
             $installDir,
@@ -62,9 +47,8 @@ class WordPressCoreInstallerTest extends TestCase
 
     public function testArrayOfInstallDirs()
     {
-        $composer    = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
-        $composer->setPackage($rootPackage);
+        $this->composer->setPackage($rootPackage);
         $rootPackage->setExtra(
             [
                 'wordpress-core-dir' => [
@@ -73,7 +57,7 @@ class WordPressCoreInstallerTest extends TestCase
                 ],
             ]
         );
-        $installer = new WordPressCoreInstaller(new NullIO(), $composer);
+        $installer = new WordPressCoreInstaller($this->io, $this->composer);
 
         $this->assertEquals(
             'install-dir/one',
@@ -96,8 +80,7 @@ class WordPressCoreInstallerTest extends TestCase
      */
     public function testTwoPackagesCannotShareDirectory()
     {
-        $composer  = $this->createComposer();
-        $installer = new WordPressCoreInstaller(new NullIO(), $composer);
+        $installer = new WordPressCoreInstaller($this->io, $this->composer);
         $package1  = new Package('test/foobar', '1.1.1.1', '1.1.1.1');
         $package2  = new Package('test/bazbat', '1.1.1.1', '1.1.1.1');
 
@@ -112,11 +95,10 @@ class WordPressCoreInstallerTest extends TestCase
      */
     public function testSensitiveInstallDirectoriesNotAllowed($directory)
     {
-        $composer  = $this->createComposer();
         $rootPackage = new RootPackage('test/root-package', '1.0.1.0', '1.0.1');
-        $composer->setPackage($rootPackage);
-        $rootPackage->setExtra([ 'wordpress-core-dir' => $directory ]);
-        $installer = new WordPressCoreInstaller(new NullIO(), $composer);
+        $this->composer->setPackage($rootPackage);
+        $rootPackage->setExtra(['wordpress-core-dir' => $directory]);
+        $installer = new WordPressCoreInstaller($this->io, $this->composer);
         $package   = new Package('test/package', '1.1.0.0', '1.1');
         $installer->getInstallPath($package);
     }
@@ -124,26 +106,8 @@ class WordPressCoreInstallerTest extends TestCase
     public function dataProviderSensitiveDirectories()
     {
         return [
-            [ '.' ],
-            [ 'vendor' ],
+            ['.'],
+            ['vendor'],
         ];
-    }
-
-    private function resetInstallPaths()
-    {
-        $prop = new \ReflectionProperty('\HowToADHD\Composer\WordPressCoreInstaller', 'installedPaths');
-        $prop->setAccessible(true);
-        $prop->setValue([]);
-    }
-
-    /**
-     * @return Composer
-     */
-    private function createComposer()
-    {
-        $composer = new Composer();
-        $composer->setConfig(new Config());
-
-        return $composer;
     }
 }
